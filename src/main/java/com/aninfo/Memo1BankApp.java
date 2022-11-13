@@ -1,7 +1,9 @@
 package com.aninfo;
 
 import com.aninfo.model.Account;
+import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
+import com.aninfo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +25,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 public class Memo1BankApp {
+
+	@Autowired
+	private TransactionService transactionService;
 
 	@Autowired
 	private AccountService accountService;
@@ -65,14 +70,36 @@ public class Memo1BankApp {
 		accountService.deleteById(cbu);
 	}
 
-	@PutMapping("/accounts/{cbu}/withdraw")
-	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.withdraw(cbu, sum);
+	@PostMapping("/transactions")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaction createTransaction(@RequestBody Transaction transaction) {
+		return transactionService.createTransaction(transaction);
 	}
 
-	@PutMapping("/accounts/{cbu}/deposit")
-	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.deposit(cbu, sum);
+	@GetMapping("/transactions")
+	public Collection<Transaction> getTransactions() {
+		return transactionService.getTransactions();
+	}
+
+	@GetMapping("/transactions/{transactionCode}")
+	public ResponseEntity<Transaction> getTransaction(@PathVariable Long transactionCode) {
+		Optional<Transaction> transactionOptional = transactionService.findById(transactionCode);
+		return ResponseEntity.of(transactionOptional);
+	}
+
+	@DeleteMapping("/transactions/{transactionCode}")
+	public void deleteTransaction(@PathVariable Long transactionCode) {
+		transactionService.deleteById(transactionCode);
+	}
+
+	@PutMapping("/transactions/{cbu}/withdraw")
+	public Transaction withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
+		return transactionService.withdraw(cbu, sum);
+	}
+
+	@PutMapping("/transactions/{cbu}/deposit")
+	public Transaction deposit(@PathVariable Long cbu, @RequestParam Double sum) {
+		return transactionService.deposit(cbu, sum);
 	}
 
 	@Bean
