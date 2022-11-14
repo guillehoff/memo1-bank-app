@@ -14,6 +14,11 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
+    final Double MAX_PROMO = 5000.0;
+    final Double MIN_PROMO = 2000.0;
+    final Double MAX_AMOUNT_PROMO = 500.0;
+
+
     @Autowired
     private AccountRepository accountRepository;
 
@@ -59,10 +64,25 @@ public class AccountService {
         }
 
         Account account = accountRepository.findAccountByCbu(cbu);
-        account.setBalance(account.getBalance() + sum);
+        account.setBalance(account.getBalance() + (sum + amountPromo(sum)));
         accountRepository.save(account);
 
         return account;
+    }
+
+    public Double amountPromo(Double sum) {
+
+        Double amountPromo = 0.0;
+
+        if (sum >= MIN_PROMO && sum < MAX_PROMO) {
+            amountPromo = (sum * 0.1);
+        }
+
+        if (sum >= MAX_PROMO) {
+            amountPromo = MAX_AMOUNT_PROMO;
+        }
+
+        return amountPromo;
     }
 
 }

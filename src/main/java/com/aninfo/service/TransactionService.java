@@ -18,12 +18,28 @@ import java.util.Optional;
 public class TransactionService {
 
     @Autowired
+    private AccountService accountService;  //service se puede comunicar con service?
+
+    @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
     private TransactionRepository transactionRepository;
 
     public Transaction createTransaction(Transaction transaction) {
+
+        if (transaction.getAmount() <= 0) {
+            throw new DepositNegativeSumException("Cannot transaction negative or null sums");
+        }
+
+        if (transaction.getType().equals("deposit")) {
+            accountService.deposit(transaction.getAccountCbu(), transaction.getAmount());
+        }
+
+        if (transaction.getType().equals("withdrawal")) {
+            accountService.withdraw(transaction.getAccountCbu(), transaction.getAmount());
+        }
+
         return transactionRepository.save(transaction);
     }
 
