@@ -36,7 +36,7 @@ public class TransactionService {
             accountService.deposit(transaction.getAccountCbu(), transaction.getAmount());
         }
 
-        if (transaction.getType().equals("withdrawal")) {
+        if (transaction.getType().equals("withdraw")) {
             accountService.withdraw(transaction.getAccountCbu(), transaction.getAmount());
         }
 
